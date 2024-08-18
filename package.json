@@ -1,0 +1,31 @@
+{
+  "name": "bgg_assist",
+  "version": "1.0.0",
+  "description": "Electron app to allow quick lookup for bgg posts",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phoroszowski/bgg_assist.git"
+  },
+  "keywords": [
+    "board",
+    "game",
+    "bgg",
+    "forum"
+  ],
+  "author": "Peter Horoszowski",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/phoroszowski/bgg_assist/issues"
+  },
+  "homepage": "https://github.com/phoroszowski/bgg_assist#readme",
+  "dependencies": {
+    "electron": "^31.4.0",
+    "node-key-sender": "^1.0.11",
+    "xml2js": "^0.6.2"
+  }
+}

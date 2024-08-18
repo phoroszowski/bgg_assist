@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lookup</title>
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+    }
+    #search {
+      width: 80%;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <input type="text" id="search" list="results" autofocus>
+  <datalist id="results"></datalist>
+
+  <script>
+
+    const search = document.getElementById('search');
+    const results = document.getElementById('results');
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+
+    search.addEventListener('input', async (e) => {
+      console.log('Input:', e.target.value);
+      // Clear the datalist
+      results.innerHTML = '';
+
+      // Fetch autocomplete suggestions based on input
+      const suggestions = await window.api.fetchSuggestions(e.target.value);
+
+      // Populate the datalist with the suggestions
+      suggestions.forEach(suggestion => {
+        const option = document.createElement('option');
+        option.value = suggestion;
+        results.appendChild(option);
+      });
+    });
+
+    search.addEventListener('keydown', async (e) => {
+    console.log('Key pressed:', e.key);
+    if (e.key === 'Enter') {
+      console.log('Enter hit');
+      const selectedValue = search.value;
+      // Send the selected value back to the main process to simulate keystrokes
+      window.api.sendKeystrokes(selectedValue);
+      window.close(); // Close the window
+    }
+  });
+});
+  </script>
+</body>
+</html>
