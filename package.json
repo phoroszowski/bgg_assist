@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "postcss src/styles.css -o src/tailwind.css"
   },
   "repository": {
     "type": "git",
@@ -24,8 +25,12 @@
   },
   "homepage": "https://github.com/phoroszowski/bgg_assist#readme",
   "dependencies": {
+    "autoprefixer": "^10.4.20",
     "electron": "^31.4.0",
+    "koffi": "^2.9.0",
+    "node-gyp-build": "^4.8.1",
     "node-key-sender": "^1.0.11",
+    "ref-napi": "^3.0.3",
     "xml2js": "^0.6.2"
   }
 }
