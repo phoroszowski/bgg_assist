@@ -6,6 +6,7 @@ const { exec } = require('child_process');
 const axios = require('axios');
 const xml2js = require('xml2js');
 const koffi = require('koffi');
+const { rmdir } = require('fs');
 
 // Load the user32.dll library
 const user32 = koffi.load('user32.dll');
@@ -51,7 +52,9 @@ const env = Object.assign({}, process.env, {
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 400,
+    height: 300,
+    maxWidth: 1920,
+    maxHeight: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
@@ -60,7 +63,7 @@ function createWindow() {
 
     },
     alwaysOnTop: true, // Keeps the window on top
-    frame: true, // Removes the window frame
+    frame: false, // Removes the window frame
   });
 
   // mainWindow.webContents.openDevTools();
@@ -112,7 +115,9 @@ app.whenReady().then(() => {
 ipcMain.handle('fetch-suggestions', async (event, query) => {
     // Implement your autocomplete logic here
     //search bgg web api GET for partial string match using axios
-    const response = await axios.get(`https://api.geekdo.com/xmlapi/search?search=${query}`);
+    let url = `https://api.geekdo.com/xmlapi/search?search=${query}`;
+    console.log(`Url: ${url}`);
+    const response = await axios.get(url);
     const suggestionsXML = response.data;
     const parser = new xml2js.Parser();
     const result = await parser.parseStringPromise(suggestionsXML);
@@ -139,18 +144,28 @@ ipcMain.handle('fetch-suggestions', async (event, query) => {
   ipcMain.handle('fetch-game-details', async (event, id) => {
     // Implement your game details logic here
     //search bgg web api GET for partial string match using axios
-    const response = await axios.get(`https://api.geekdo.com/xmlapi/boardgame/${id}`);
+    let url = `https://api.geekdo.com/xmlapi/boardgame/${id}`;
+    console.log(`Url: ${url}`);
+    const response = await axios.get(url);
     const gameDetailsXML = response.data;
     const parser = new xml2js.Parser();
     const result = await parser.parseStringPromise(gameDetailsXML);
     
-    console.log(result.boardgames.boardgame[0]);
+
 
     //console.log(result);
+    let names = result.boardgames.boardgame[0].name;
+    let final_name = names[0]._;
+    for(somename of names){
+      if(somename.$?.primary && somename.$?.primary == 'true'){
+        final_name = somename._;
+      }
+    }
+    
     const gameDetails = {
-      name: result.boardgames.boardgame[0].name[0]._,
+      name: final_name,
       description: result.boardgames.boardgame[0].description[0],
-      yearPublished: result.boardgames.boardgame[0].yearpublished[0],
+      yearPublished: result.boardgames.boardgame[0].yearpublished && result.boardgames.boardgame[0].yearpublished ? result.boardgames.boardgame[0].yearpublished[0] : 0,
       minPlayers: result.boardgames.boardgame[0].minplayers[0],
       maxPlayers: result.boardgames.boardgame[0].maxplayers[0],
       playingTime: result.boardgames.boardgame[0].playingtime[0],
@@ -174,5 +189,9 @@ ipcMain.handle('fetch-suggestions', async (event, query) => {
     
 
     return "Sent Text";
+  });
+
+  ipcMain.on('close-window', (event) => {
+    mainWindow.hide();
   });
   
